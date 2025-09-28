@@ -58,7 +58,7 @@ $ ./umr --script pci-bus 17
 
 correspondence between physical GPU IDs and UMR GPU instances:
 ```
-0 -> 0 (in ali machine this cloud be 1)
+0 -> 0 (in ali machine this could be 1)
 1 -> 9
 2 -> 17
 3 -> 25
@@ -98,5 +98,5 @@ g=$((gpu * 8 + 1))
 
 get umr info by physical gpu id:
 ```
-sudo bash dump_all_cpc_info.sh
+sudo bash dump_all_cpc_info.sh {physical_gpu_id}
 ```
