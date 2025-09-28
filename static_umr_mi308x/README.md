@@ -43,6 +43,12 @@ GPU[31]         : PCI Bus: 0001:C9:00.3
 ==========================================================================================
 ================================== End of ROCm SMI Log ===================================
 ```
+database setup
+If you're using umr into the host in first time, remember to export "export UMR_DATABASE_PATH=$PWD/database". that will able to help you to resolve the pci-util related problems.
+PWD folder should be under static_umr_mi308x, db file is included in this folder. Only dump_all_cpc_info.sh has this setup.
+```
+export UMR_DATABASE_PATH=$PWD/database
+```
 
 check the correspondence between pci-instances and umr-gpu-instance:
 ```
