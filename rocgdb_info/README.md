@@ -84,3 +84,67 @@ Signal Fields:
   queue_ptr=0x0
   Modified signal at 0x7e4cb57d3100 - value changed from 1 to 0
 ```
+
+get doorbell signal from the rocgdb:
+```
+(gdb) thread 348
+(gdb) bt
+#0  0x00007f07556687c7 in rocr::timer::fast_clock::now () at /data/testhome/mainline-rocm-runtime/amd_new_base/ROCR-Runtime/runtime/hsa-runtime/core/util/timer.h:140
+#1  rocr::core::InterruptSignal::WaitRelaxed (this=0x7dc1642d2ee0, condition=HSA_SIGNAL_CONDITION_LT, compare_value=1, timeout=<optimized out>, wait_hint=HSA_WAIT_STATE_ACTIVE)
+    at /data/testhome/mainline-rocm-runtime/amd_new_base/ROCR-Runtime/runtime/hsa-runtime/core/runtime/interrupt_signal.cpp:212
+#2  0x00007f075566808a in rocr::core::InterruptSignal::WaitAcquire (this=<optimized out>, condition=<optimized out>, compare_value=<optimized out>, timeout=<optimized out>, wait_hint=<optimized out>)
+    at /data/testhome/mainline-rocm-runtime/amd_new_base/ROCR-Runtime/runtime/hsa-runtime/core/runtime/interrupt_signal.cpp:265
+#3  0x00007f075565cff9 in rocr::HSA::hsa_signal_wait_scacquire (hsa_signal=..., condition=HSA_SIGNAL_CONDITION_LT, compare_value=1, timeout_hint=18446744073709551615, 
+    wait_state_hint=HSA_WAIT_STATE_ACTIVE) at /data/testhome/mainline-rocm-runtime/amd_new_base/ROCR-Runtime/runtime/hsa-runtime/core/runtime/hsa.cpp:1239
+#4  0x00007f0753f393fb in amd::roc::WaitForSignal<false> (forced_wait=false, active_wait=<optimized out>, signal=...)
+    at /data/testhome/mainline-rocm-runtime/amd_new_base/clr/rocclr/device/rocm/rocvirtual.hpp:70
+#5  amd::roc::Device::IsHwEventReady (this=<optimized out>, event=..., wait=<optimized out>, hip_event_flags=<optimized out>)
+    at /data/testhome/mainline-rocm-runtime/amd_new_base/clr/rocclr/device/rocm/rocdevice.cpp:3007
+#6  0x00007f0753f1e67a in amd::HostQueue::finish (this=0x7dc622f51900, cpu_wait=<optimized out>) at /data/testhome/mainline-rocm-runtime/amd_new_base/clr/rocclr/platform/commandqueue.cpp:164
+#7  0x00007f0753cba6ce in hip::Device::SyncAllStreams (this=0x7dc624314300, cpu_wait=<optimized out>, wait_blocking_streams_only=<optimized out>)
+    at /data/testhome/mainline-rocm-runtime/amd_new_base/clr/hipamd/src/hip_device.cpp:281
+#8  0x00007f0753ca5799 in hip::hipDeviceSynchronize () at /data/testhome/mainline-rocm-runtime/amd_new_base/clr/hipamd/src/hip_device_runtime.cpp:621
+#9  0x00007f075b9b04ab in stream_executor::gpu::GpuDriver::SynchronizeContext () at external/org_tensorflow/tensorflow/stream_executor/rocm/rocm_driver.cc:886
+#10 0x00007f075b83805c in stream_executor::StreamExecutor::SynchronizeAllActivity () at external/org_tensorflow/tensorflow/stream_executor/stream_executor_pimpl.cc:554
+#11 0x00007f075f18e10a in tensorflow::XlaCompilationCache::~XlaCompilationCache () at external/org_tensorflow/tensorflow/compiler/jit/xla_compilation_cache.cc:78
+#12 0x00007f075f18e512 in tensorflow::XlaCompilationCache::~XlaCompilationCache () at external/org_tensorflow/tensorflow/compiler/jit/xla_compilation_cache.cc:90
+#13 0x00007f075b25c4d7 in tensorflow::core::RefCounted::Unref () at external/org_tensorflow/tensorflow/core/lib/core/refcount.h:104
+#14 tensorflow::core::RefCounted::Unref () at external/org_tensorflow/tensorflow/core/lib/core/refcount.h:97
+#15 tensorflow::ResourceMgr::Clear () at external/org_tensorflow/tensorflow/core/framework/resource_mgr.cc:119
+#16 0x00007f07664a68a4 in tensorflow::DirectSession::~DirectSession () at external/org_tensorflow/tensorflow/core/common_runtime/direct_session.cc:474
+#17 0x00007f07664a72b2 in tensorflow::DirectSession::~DirectSession () at external/org_tensorflow/tensorflow/core/common_runtime/direct_session.cc:478
+#18 0x00000000059de862 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:158
+#19 std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:733
+#20 std::__shared_ptr<tensorflow::Session, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:1183
+#21 std::shared_ptr<tensorflow::Session>::~shared_ptr () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr.h:121
+#22 std::_Destroy<std::shared_ptr<tensorflow::Session> > () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/stl_construct.h:140
+#23 std::_Destroy_aux<false>::__destroy<std::shared_ptr<tensorflow::Session>*> () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/stl_construct.h:152
+#24 std::_Destroy<std::shared_ptr<tensorflow::Session>*> () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/stl_construct.h:185
+#25 std::_Destroy<std::shared_ptr<tensorflow::Session>*, std::shared_ptr<tensorflow::Session> > () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/alloc_traits.h:738
+#26 std::vector<std::shared_ptr<tensorflow::Session>, std::allocator<std::shared_ptr<tensorflow::Session> > >::~vector ()
+    at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/stl_vector.h:680
+#27 suez::turing::TfSession::~TfSession () at bazel-out/k8-opt/bin/aios/suez_turing/_virtual_includes/query_resource/suez/turing/common/TfSession.h:15
+#28 __gnu_cxx::new_allocator<suez::turing::TfSession>::destroy<suez::turing::TfSession> () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/ext/new_allocator.h:156
+#29 std::allocator_traits<std::allocator<suez::turing::TfSession> >::destroy<suez::turing::TfSession> () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/alloc_traits.h:531
+#30 std::_Sp_counted_ptr_inplace<suez::turing::TfSession, std::allocator<suez::turing::TfSession>, (__gnu_cxx::_Lock_policy)2>::_M_dispose ()
+    at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:560
+#31 0x000000000631ab72 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:158
+#32 std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:733
+#33 std::__shared_ptr<suez::turing::TfSession, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr_base.h:1183
+#34 std::shared_ptr<suez::turing::TfSession>::~shared_ptr () at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/shared_ptr.h:121
+#35 std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> >::~pair ()
+    at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/stl_pair.h:211
+#36 __gnu_cxx::new_allocator<std::_Rb_tree_node<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> > > >::destroy<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> > > ()
+    at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/ext/new_allocator.h:156
+#37 std::allocator_traits<std::allocator<std::_Rb_tree_node<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> > > > >::destroy<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> > > ()
+    at /usr/lib/gcc/x86_64-redhat-linux/10/../../../../include/c++/10/bits/alloc_traits.h:531
+#38 std::_Rb_tree<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> >, std::_Select1st<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::shared_ptr<suez::turing::TfSession> > >, std::less<std::basic_string<char, std:--Type <RET> for more, q to quit, c to continue without paging--Quit
+(gdb) f 6
+(gdb) p command->queue_
+$2 = (amd::HostQueue *) 0x7dc622f51900
+(gdb) p ((amd::HostQueue *) 0x7dc622f51900)->thread_.virtualDevice_
+$3 = (amd::device::VirtualDevice *) 0x7dc6233a8f00
+(gdb) p ((amd::roc::VirtualGPU *) 0x7dc6233a8f00)->gpu_queue_
+$4 = (hsa_queue_t *) 0x7f0757fde000
+(gdb) p ((hsa_queue_t *) 0x7f0757fde000)->doorbell_signal->handle
+```
