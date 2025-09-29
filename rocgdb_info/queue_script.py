@@ -202,6 +202,75 @@ class DumpHsaSignal(gdb.Command):
 
 DumpHsaSignal()
 
+class ModifyHsaSignal(gdb.Command):
+    """
+    ModifyHsaSignal : modify_hsa_signal <signal> value
+    """
+    
+    def __init__(self):
+        super(DumpQueueMemory, self).__init__("modify_hsa_signal", gdb.COMMAND_USER)
+        
+    def invoke(self, arg, from_tty):
+        args = gdb.string_to_argv(arg)
+        if len(args) != 2:
+            print("usage: modify_hsa_signal <signal> value")
+            return
+        
+        signal_addr = int(gdb.parse_and_eval(args[3]))
+        val = int(gdb.parse_and_eval(args[3]))
+        inferior = gdb.selected_inferior()
+
+        try:
+            data = inferior.read_memory(signal_addr, 64).tobytes()
+        except gdb.MemoryError:
+            print(f"Cannot read memory at 0x{signal_addr:x}")
+            return
+        
+        try:
+            (
+                kind,
+                value,
+                mailbox_ptr,
+                event_id,
+                start_ts,
+                end_ts,
+                queue_ptr,
+            ) = struct.unpack_from("<qQ QI xxxx QQ Q", data, 0)
+            kind= {0: "invalid(0)", 1: "user(1)", -1: "doorbell(-1)", -2: "legacy(-2)"}.get(
+                kind, kind
+            )
+            print(f"Signal at 0x{signal_addr:x}:")
+            print("Signal Fields:")
+            print(f"  kind={kind}")
+            print(f"  value={value}")
+            print(f"  mailbox_ptr=0x{mailbox_ptr:x}")
+            print(f"  event_id={event_id}")
+            print(f"  start_ts={start_ts}, end_ts={end_ts}")
+            print(f"  queue_ptr=0x{queue_ptr:x}")
+        except struct.error as e:
+            print(e)
+            print("  Failed to decode hsa signal")
+            return
+        
+        # Modify the value field (offset 8 bytes for the 'value' field)
+        try:
+            new_data = bytearray(data)
+            struct.pack_into("<Q", new_data, 8, val)
+            inferior.write_memory(signal_addr, new_data)
+            print(f" Modified signal at 0x{signal_addr:x} - value changed from {value} to {val}")
+            
+            # Verify the change
+            # verify_data = inferior.read_memory(signal_addr, 64).tobytes()
+            # new_value = struct.unpack_from("<Q", verify_data, 8)[0]
+            # print(f"Verified new value: {new_value}")
+            
+        except gdb.MemoryError:
+            print(f"Cannot write memory at 0x{signal_addr:x}")
+        except Exception as e:
+            print(f"Error modifying signal: {e}")
+        
+
+ModifyHsaSignal()
 
 class DumpSdmaQueue(gdb.Command):
     """Dump SDMA queue"""

@@ -71,3 +71,16 @@ save all packet into file:
 (gdb) dump_queue_memory binary qid3_0x00007e4bc5a00000 0x00007e4bc5a00000 1048576
 success: qid3_0x00007e4bc5a00000 (size:  1048576 bytes)
 ```
+
+modify signal:
+```
+(gdb) modify_hsa_signal 0x7e4cb57d3100 0
+Signal Fields:
+  kind=user(1)
+  value=1
+  mailbox_ptr=0x7f8df84c37d8
+  event_id=1787
+  start_ts=257063712923241, end_ts=257063712923413
+  queue_ptr=0x0
+  Modified signal at 0x7e4cb57d3100 - value changed from 1 to 0
+```
