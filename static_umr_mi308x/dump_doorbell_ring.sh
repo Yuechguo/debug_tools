@@ -1,5 +1,9 @@
 gpu=$1
 gpu=${gpu:-0}
+
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export UMR_DATABASE_PATH=${dir}/database
+
 if [ $gpu -le 1 ]; then
     g=0
 else
