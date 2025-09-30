@@ -19,7 +19,7 @@ export UMR_DATABASE_PATH=${dir}/database
 #	sudo "${dir}"/install_umr.sh
 #fi
 "${dir}"/dump_cpc.sh ${g}
-#"${dir}"/dump_waves.sh ${g}
-#"${dir}"/collect_kfd_debug_info.sh
-#"${dir}"/dump_cpc_scratch_mems.sh ${g}
-#"${dir}"/dump_cp_regs.sh ${g}
+"${dir}"/dump_waves.sh ${g}
+"${dir}"/collect_kfd_debug_info.sh
+"${dir}"/dump_cpc_scratch_mems.sh ${g}
+"${dir}"/dump_cp_regs.sh ${g}

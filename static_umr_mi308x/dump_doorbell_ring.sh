@@ -19,6 +19,17 @@ for xcc in {0,1,2,3}; do
                 echo "g:${g} xcc:${xcc} me:${me} pipe:${pipe} queue:${queue}" 
                 echo "g:${g} xcc:${xcc} me:${me} pipe:${pipe} queue:${queue}" >> "${filename}"
                 ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_PQ_DOORBELL_CONTROL 2>&1 >> "${filename}"
+                #echo "g:${g} xcc:${xcc} me:${me} pipe:${pipe} queue:${queue} VMID" >> "${filename}"
+                #./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_VMID 2>&1 >> "${filename}"
+                echo "g:${g} xcc:${xcc} me:${me} pipe:${pipe} queue:${queue} READ/WRITE" >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_PQ_RPTR 2>&1 >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_PQ_WPTR_LO 2>&1 >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_PQ_WPTR_HI 2>&1 >> "${filename}"
+                echo "g:${g} xcc:${xcc} me:${me} pipe:${pipe} queue:${queue} ADDR" >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_MQD_BASE_ADDR 2>&1 >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_MQD_BASE_ADDR_HI 2>&1 >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_PQ_BASE 2>&1 >> "${filename}"
+                ./umr -i "${g}" -vmp "${xcc}" -sb "${me}" "${pipe}" "${queue}" -O bits -r *.*.CP_HQD_PQ_BASE_HI 2>&1 >> "${filename}"
             done
         done
     done
