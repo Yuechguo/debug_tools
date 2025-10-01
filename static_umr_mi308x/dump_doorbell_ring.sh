@@ -21,6 +21,7 @@ for xcc in {0,1,2,3}; do
     ./umr -i "${g}" -vmp "${xcc}" -O bits -r *.*.GRBM_STATUS2 2>&1 >> "${filename}"
     ./umr -i "${g}" -vmp "${xcc}" -O bits -r *.*.CP_MEC1_INSTR_PNTR 2>&1 >> "${filename}"
     ./umr -i "${g}" -vmp "${xcc}" -O bits -r *.*.CP_MEC2_INSTR_PNTR 2>&1 >> "${filename}"
+
     for me in {1,2}; do
         for pipe in {0,1,2,3}; do
             for queue in {0,1,2,3}; do
